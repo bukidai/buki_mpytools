@@ -8,6 +8,7 @@ __pycache__/
 
 # Distribution / packaging
 venv
+tests/aa.py
 .mpytools
 .Python
 env/
