@@ -23,7 +23,7 @@ import ast
 import textwrap
 import binascii
 
-from ampy.pyboard import PyboardError
+from buki_mpy.pyboard import PyboardError
 
 
 BUFFER_SIZE = 32  # Amount of data to read or write to the serial port at a time.
@@ -210,8 +210,7 @@ class Files(object):
         self._pyboard.exit_raw_repl()
 
     def put(self, filename, data, progress_cb=None):
-        """Create or update the specified file with the provided data.
-        """
+        """Create or update the specified file with the provided data."""
         # Open the file for writing on the board and write chunks of data.
         self._pyboard.enter_raw_repl()
         self._pyboard.exec_("f = open('{0}', 'wb')".format(filename))
@@ -225,7 +224,7 @@ class Files(object):
                 chunk = "b" + chunk
             self._pyboard.exec_("f.write({0})".format(chunk))
             # notify caller how much has already been written
-            if hasattr(progress_cb, '__call__'):
+            if hasattr(progress_cb, "__call__"):
                 progress_cb(chunk_size)
 
         self._pyboard.exec_("f.close()")
