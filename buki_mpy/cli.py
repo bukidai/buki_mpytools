@@ -33,7 +33,7 @@ from buki_mpy.progress_bar import PorgressBarBath
 
 # Load AMPY_PORT et al from .ampy file
 # Performed here because we need to beat click's decorators.
-config = dotenv.find_dotenv(filename=".ampy", usecwd=True)
+config = dotenv.find_dotenv(filename=".mpytools", usecwd=True)
 if config:
     dotenv.load_dotenv(dotenv_path=config)
 
@@ -61,7 +61,7 @@ def windows_full_port_name(portname):
 @click.option(
     "--port",
     "-p",
-    envvar="AMPY_PORT",
+    envvar="BT_PORT",
     required=True,
     type=click.STRING,
     help="Name of serial port for connected board.  Can optionally specify with AMPY_PORT environment variable.",
@@ -70,7 +70,7 @@ def windows_full_port_name(portname):
 @click.option(
     "--baud",
     "-b",
-    envvar="AMPY_BAUD",
+    envvar="BT_BAUD",
     default=115200,
     type=click.INT,
     help="Baud rate for the serial connection (default 115200).  Can optionally specify with AMPY_BAUD environment variable.",
@@ -79,7 +79,7 @@ def windows_full_port_name(portname):
 @click.option(
     "--delay",
     "-d",
-    envvar="AMPY_DELAY",
+    envvar="BT_DELAY",
     default=0,
     type=click.FLOAT,
     help="Delay in seconds before entering RAW MODE (default 0). Can optionally specify with AMPY_DELAY environment variable.",
@@ -371,6 +371,44 @@ def run(local_file, no_output):
         click.echo(
             "Failed to find or read input file: {0}".format(local_file), err=True
         )
+
+
+@cli.command()
+@click.option(
+    "--path",
+    envvar="BT_SYNC",
+    default="./src",
+    type=click.STRING,
+    help="Delay in seconds before entering RAW MODE (default 0). Can optionally specify with AMPY_DELAY environment variable.",
+    metavar="PATH",
+)
+@click.option(
+    "--force",
+    "-f",
+    is_flag=True,
+    help="Delay in seconds before entering RAW MODE (default 0). Can optionally specify with AMPY_DELAY environment variable.",
+)
+def push(path, force) -> None:
+    print("PUSH_TEST", path, force)
+
+
+@cli.command()
+@click.option(
+    "--path",
+    envvar="BT_SYNC",
+    default="./src",
+    type=click.STRING,
+    help="Delay in seconds before entering RAW MODE (default 0). Can optionally specify with AMPY_DELAY environment variable.",
+    metavar="PATH",
+)
+@click.option(
+    "--force",
+    "-f",
+    is_flag=True,
+    help="Delay in seconds before entering RAW MODE (default 0). Can optionally specify with AMPY_DELAY environment variable.",
+)
+def pull(path, force) -> None:
+    print("PULL_TEST", path, force)
 
 
 @cli.command()
