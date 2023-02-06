@@ -29,8 +29,8 @@ try:
 except ImportError:
     import mock
 
-import ampy.files as files
-from ampy.pyboard import PyboardError
+import buki_mpy.files as files
+from buki_mpy.pyboard import PyboardError
 
 
 class TestFiles(unittest.TestCase):

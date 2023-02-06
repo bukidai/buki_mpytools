@@ -28,17 +28,17 @@ import serial.serialutil
 
 import click
 import dotenv
-from progress_bar import PorgressBar
-from progress_bar import PorgressBarBath
+from buki_mpy.progress_bar import PorgressBar
+from buki_mpy.progress_bar import PorgressBarBath
 
 # Load AMPY_PORT et al from .ampy file
 # Performed here because we need to beat click's decorators.
-config = dotenv.find_dotenv(filename=".ampy", usecwd=True)
+config = dotenv.find_dotenv(filename=".mpytools", usecwd=True)
 if config:
     dotenv.load_dotenv(dotenv_path=config)
 
-import ampy.files as files
-import ampy.pyboard as pyboard
+import buki_mpy.files as files
+import buki_mpy.pyboard as pyboard
 
 
 _board = None
@@ -61,7 +61,7 @@ def windows_full_port_name(portname):
 @click.option(
     "--port",
     "-p",
-    envvar="AMPY_PORT",
+    envvar="BT_PORT",
     required=True,
     type=click.STRING,
     help="Name of serial port for connected board.  Can optionally specify with AMPY_PORT environment variable.",
@@ -70,7 +70,7 @@ def windows_full_port_name(portname):
 @click.option(
     "--baud",
     "-b",
-    envvar="AMPY_BAUD",
+    envvar="BT_BAUD",
     default=115200,
     type=click.INT,
     help="Baud rate for the serial connection (default 115200).  Can optionally specify with AMPY_BAUD environment variable.",
@@ -79,7 +79,7 @@ def windows_full_port_name(portname):
 @click.option(
     "--delay",
     "-d",
-    envvar="AMPY_DELAY",
+    envvar="BT_DELAY",
     default=0,
     type=click.FLOAT,
     help="Delay in seconds before entering RAW MODE (default 0). Can optionally specify with AMPY_DELAY environment variable.",
@@ -137,9 +137,7 @@ def get(remote_file, local_file):
 @click.option(
     "--exists-okay", is_flag=True, help="Ignore if the directory already exists."
 )
-@click.option(
-    "--make-parents", is_flag=True, help="Create any missing parents."
-)
+@click.option("--make-parents", is_flag=True, help="Create any missing parents.")
 @click.argument("directory")
 def mkdir(directory, exists_okay, make_parents):
     """
@@ -151,11 +149,11 @@ def mkdir(directory, exists_okay, make_parents):
     By default you cannot recursively create a hierarchy of directories with one
     mkdir command. You may create each parent directory with separate
     mkdir command calls, or use the --make-parents option.
-    
+
     For example to make a directory under the root called 'code':
 
       ampy --port /board/serial/port mkdir /code
-      
+
     To make a directory under the root called 'code/for/ampy', along with all
     missing parents:
 
@@ -164,7 +162,7 @@ def mkdir(directory, exists_okay, make_parents):
     # Run the mkdir command.
     board_files = files.Files(_board)
     if make_parents:
-        if directory[0] != '/':
+        if directory[0] != "/":
             directory = "/" + directory
         dirpath = ""
         for dir in directory.split("/")[1:-1]:
@@ -253,12 +251,12 @@ def put(local, remote):
     # Otherwise it's a file and should simply be copied over.
     if os.path.isdir(local):
         # Create progress bar for each file
-        pb_bath =  PorgressBarBath('Overall progress')
+        pb_bath = PorgressBarBath("Overall progress")
         for parent, child_dirs, child_files in os.walk(local, followlinks=True):
             for filename in child_files:
                 path = os.path.join(parent, filename)
                 size = os.stat(path).st_size
-                pb_bath.add_subjob(PorgressBar(name=path,total=size ))
+                pb_bath.add_subjob(PorgressBar(name=path, total=size))
 
         # Directory copy, create the directory and walk all children to copy
         # over the files.
@@ -274,7 +272,7 @@ def put(local, remote):
             except files.DirectoryExistsError:
                 # Ignore errors for directories that already exist.
                 pass
-            
+
             # Loop through all the files and put them on the board too.
             for filename in child_files:
                 local_path = os.path.join(parent, filename)
@@ -292,7 +290,8 @@ def put(local, remote):
             progress = PorgressBar(name=local, total=len(data))
             board_files = files.Files(_board)
             board_files.put(remote, data, progress.on_progress_done)
-    print('')
+    print("")
+
 
 @cli.command()
 @click.argument("remote_file")
@@ -372,6 +371,44 @@ def run(local_file, no_output):
         click.echo(
             "Failed to find or read input file: {0}".format(local_file), err=True
         )
+
+
+@cli.command()
+@click.option(
+    "--path",
+    envvar="BT_SYNC",
+    default="./src",
+    type=click.STRING,
+    help="Delay in seconds before entering RAW MODE (default 0). Can optionally specify with AMPY_DELAY environment variable.",
+    metavar="PATH",
+)
+@click.option(
+    "--force",
+    "-f",
+    is_flag=True,
+    help="Delay in seconds before entering RAW MODE (default 0). Can optionally specify with AMPY_DELAY environment variable.",
+)
+def push(path, force) -> None:
+    print("PUSH_TEST", path, force)
+
+
+@cli.command()
+@click.option(
+    "--path",
+    envvar="BT_SYNC",
+    default="./src",
+    type=click.STRING,
+    help="Delay in seconds before entering RAW MODE (default 0). Can optionally specify with AMPY_DELAY environment variable.",
+    metavar="PATH",
+)
+@click.option(
+    "--force",
+    "-f",
+    is_flag=True,
+    help="Delay in seconds before entering RAW MODE (default 0). Can optionally specify with AMPY_DELAY environment variable.",
+)
+def pull(path, force) -> None:
+    print("PULL_TEST", path, force)
 
 
 @cli.command()
