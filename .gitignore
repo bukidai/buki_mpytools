@@ -7,6 +7,8 @@ __pycache__/
 *.so
 
 # Distribution / packaging
+src
+tests
 venv
 tests/aa.py
 .mpytools

@@ -30,15 +30,15 @@ import click
 import dotenv
 from buki_mpy.progress_bar import PorgressBar
 from buki_mpy.progress_bar import PorgressBarBath
+import buki_mpy.files as files
+import buki_mpy.pyboard as pyboard
+import buki_mpy.sync_tool as sync
 
 # Load AMPY_PORT et al from .ampy file
 # Performed here because we need to beat click's decorators.
 config = dotenv.find_dotenv(filename=".mpytools", usecwd=True)
 if config:
     dotenv.load_dotenv(dotenv_path=config)
-
-import buki_mpy.files as files
-import buki_mpy.pyboard as pyboard
 
 
 _board = None
@@ -379,17 +379,20 @@ def run(local_file, no_output):
     envvar="BT_SYNC",
     default="./src",
     type=click.STRING,
-    help="Delay in seconds before entering RAW MODE (default 0). Can optionally specify with AMPY_DELAY environment variable.",
+    help="path for sync with board.",
     metavar="PATH",
 )
 @click.option(
     "--force",
     "-f",
     is_flag=True,
-    help="Delay in seconds before entering RAW MODE (default 0). Can optionally specify with AMPY_DELAY environment variable.",
+    help="remove files in board if files dosen't exist in local directory.",
 )
 def push(path, force) -> None:
+    """push files to board"""
     print("PUSH_TEST", path, force)
+    board_files = files.Files(_board)
+    print(sync.get_board_hash(board_files).decode(encoding="utf-8"))
 
 
 @cli.command()
