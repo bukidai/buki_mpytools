@@ -392,7 +392,12 @@ def push(path, force) -> None:
     """push files to board"""
     print("PUSH_TEST", path, force)
     board_files = files.Files(_board)
-    print(sync.get_board_hash(board_files).decode(encoding="utf-8"))
+    board_hash = sync.get_board_hash(board_files)
+    local_hash = sync.get_local_hash(path)
+    res = sync.compare(local_hash, board_hash)
+    print(res[0])
+    print(res[1])
+    print(res[2])
 
 
 @cli.command()
